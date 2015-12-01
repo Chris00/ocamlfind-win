@@ -1,0 +1,37 @@
+# This compiles a native Windows OCaml and flexdll and makes them
+# available as an artifact.
+
+# Compile the 64 bits version
+platform:
+  - x64
+
+branches:
+  only:
+    - master
+
+environment:
+  global:
+    CYG_ROOT: C:/cygwin
+    CYG_MIRROR: http://mirrors.kernel.org/sourceware/cygwin/
+    CYG_CACHE: C:/cygwin/var/cache/setup
+
+cache:
+  - C:\cygwin\var\cache\setup
+
+install:
+  - '"%CYG_ROOT%\setup-x86.exe" -qnNdO -R "%CYG_ROOT%" -s "%CYG_MIRROR%" -l "%CYG_CACHE%" -P make -P m4 >NUL'
+  - '%CYG_ROOT%\bin\bash -lc "cygcheck -dc cygwin"'
+  - appveyor DownloadFile "https://raw.githubusercontent.com/Chris00/ocaml-appveyor/master/install_ocaml.cmd" -FileName "C:\install_ocaml.cmd"
+  - C:\install_ocaml.cmd
+  - cygpath -w "/c/Program Files/OCaml"
+  - cygpath -w "/cygdrive/c/Program Files/OCaml"
+
+build_script:
+  - '%CYG_ROOT%/bin/bash -lc "$APPVEYOR_BUILD_FOLDER/build.sh"'
+
+after_build:
+  - 7za a ocaml-findlib.zip "%OCAMLROOT%"
+
+artifacts:
+  - path: ocaml-findlib.zip
+    name: OCaml
