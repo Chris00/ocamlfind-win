@@ -9,8 +9,8 @@ varvalue="$2"
 if [ "${USE_CYGPATH}" = "1" ]; then
     #varvalue="$(echo "$varvalue" | sed -e 's;/;\\;g')"
     varvalue="$(cygpath -w -l "$varvalue")"
-    varvalue="$(echo "$varvalue" | sed -e 's;\\;\\\\\\\\;g')"
-    # e.g. c:\file is transformed to c:\\\\file
+    varvalue="$(echo "$varvalue" | sed -e 's;\\;\\\\\\\\\\\\\\\\;g')"
+    # e.g. c:\file is transformed to c:\\\\\\\\file (8 backslashes)
 else
     case `uname` in
 	MINGW*)
@@ -24,5 +24,5 @@ else
 fi
 
 sed -e 's;'"$varname"';'"$varvalue"';g'
-# e.g. c:\\\\file is parsed by sed as c:\\file which is correct for the
-# ocaml string
+# e.g. c:\\\\\\\\file in quotes represent c:\\\\file which is parsed
+# by sed as c:\\file. This final value is correct for the OCaml string.
