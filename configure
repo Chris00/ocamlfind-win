@@ -103,6 +103,12 @@ cygpath_to_unix () {
     eval "$v=\"$p\""
 }
 
+file_exists () {
+    # Cygwin MSYS_NT test may not report that the file exists without
+    # the /cygdrive prefix (but that prefix chokes cygpath so we do
+    # not want to modify the paths).
+    test $1 "$2" -o $1 "/cygdrive$2"
+}
 
 ######################################################################
 # Here the main program begins:
@@ -415,7 +421,7 @@ lbigarray=bigarray
 have_natdynlink=0
 natdynlink=""
 camlp4_dynlink=""
-if [ -f "${ocaml_core_stdlib}/dynlink.cmxa" ]; then
+if file_exists -f "${ocaml_core_stdlib}/dynlink.cmxa"; then
     have_natdynlink=1
     natdynlink="archive(native) = \"dynlink.cmxa\""
     camlp4_dynlink="dynlink"
@@ -427,7 +433,7 @@ fi
 
 # Check whether labltk is present.
 
-if [ -f "${ocaml_core_stdlib}/labltk/labltk.cma" ]; then
+if file_exists -f "${ocaml_core_stdlib}/labltk/labltk.cma"; then
     llabltk=labltk
     echo "labltk: found"
 else
@@ -441,7 +447,7 @@ fi
 
 # Check whether ocamlbuild is present
 
-if [ -f "${ocaml_core_stdlib}/ocamlbuild/ocamlbuildlib.cma" ]; then
+if file_exists -f "${ocaml_core_stdlib}/ocamlbuild/ocamlbuildlib.cma"; then
     lobuild=ocamlbuild
     echo "ocamlbuild: found"
 else
@@ -488,7 +494,7 @@ fi
 fi
 
 # compiler-libs?
-if [ -d "${ocaml_core_stdlib}/compiler-libs" ]; then
+if file_exists -d "${ocaml_core_stdlib}/compiler-libs"; then
     echo "compiler-libs: found"
     lcomplibs="compiler-libs"
 else
@@ -498,7 +504,7 @@ fi
 
 # dbm?
 
-if [ -f "${ocaml_core_stdlib}/dbm.cmi" ]; then
+if file_exists -f "${ocaml_core_stdlib}/dbm.cmi"; then
     echo "dbm: found"
     ldbm="dbm"
 else
@@ -508,7 +514,7 @@ fi
 
 # bytes?
 
-if [ -f "${ocaml_core_stdlib}/bytes.cmi" ]; then
+if file_exists -f "${ocaml_core_stdlib}/bytes.cmi"; then
     echo "bytes: found, installing fake library"
     lbytes="bytes"
     cbytes=0
